@@ -12,7 +12,7 @@ class Workspace(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     members = relationship("WorkspaceMember", back_populates="workspace", cascade="all, delete-orphan")
-
+    projects = relationship("Project", back_populates="workspace", cascade="all, delete-orphan")
 
 class WorkspaceMember(Base):
     __tablename__ = "workspace_members"

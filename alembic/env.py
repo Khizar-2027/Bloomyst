@@ -8,7 +8,9 @@ from alembic import context
 # Added
 from app.core.database import Base
 from app.users import models as user_models # noqa
-from app.workspaces import models as workspace_models # noqa 
+from app.workspaces import models as workspace_models # noqa
+from app.projects import models as project_models  # noqa
+from app.tasks import models as task_models  # noqa
 # Added
 
 # this is the Alembic Config object, which provides
