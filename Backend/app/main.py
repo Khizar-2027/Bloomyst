@@ -8,8 +8,17 @@ from app.auth.router import router as auth_router
 from app.workspaces.router import router as workspace_router
 from app.projects.router import router as project_router
 from app.tasks.router import router as task_router
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Bloomyst API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(auth_router)
 app.include_router(workspace_router)

@@ -1,5 +1,8 @@
-venv/
-__pycache__/
-*.pyc
-.env
-bloomyst.db
+Backend/venv/
+Backend/__pycache__/
+Backend/*.pyc
+Backend/.env
+Backend/bloomyst.db
+
+frontend/node_modules/
+frontend/dist/
