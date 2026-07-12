@@ -6,7 +6,7 @@ from app.projects import models as project_models
 from app.tasks import models as task_models
 from app.auth.router import router as auth_router
 from app.workspaces.router import router as workspace_router
-from app.projects.router import router as project_router
+from app.projects.router import router as project_router    
 from app.tasks.router import router as task_router
 from fastapi.middleware.cors import CORSMiddleware
 
