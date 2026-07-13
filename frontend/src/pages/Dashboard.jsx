@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { getWorkspaces, createWorkspace } from "../api/workspaces";
 
 function Dashboard() {
@@ -55,7 +56,9 @@ function Dashboard() {
       <ul>
         {workspaces.map((ws) => (
           <li key={ws.id}>
-            {ws.name} <span style={{ color: "gray" }}>({ws.slug})</span>
+            <Link to={`/workspaces/${ws.id}`}>
+              {ws.name} <span style={{ color: "gray" }}>({ws.slug})</span>
+            </Link>
           </li>
         ))}
       </ul>
