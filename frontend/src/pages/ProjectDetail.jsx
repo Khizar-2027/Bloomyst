@@ -19,11 +19,7 @@ function ProjectDetail() {
   const [error, setError] = useState("");
 
   const sensors = useSensors(
-  useSensor(PointerSensor, {
-    activationConstraint: {
-      distance: 8,
-      },
-    })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
   useEffect(() => {
@@ -63,36 +59,8 @@ function ProjectDetail() {
     }
   }
 
-  async function handleDragEnd(event) {
-    const { active, over } = event;
-    if (!over) return;
-
-    const taskId = active.id;
-    const task = tasks.find((t) => t.id === taskId);
-
-    // over.id is either a column id (todo/in_progress/done) or another task's id
-    const targetColumn = COLUMNS.find((c) => c.id === over.id);
-    const newStatus = targetColumn ? targetColumn.id : tasks.find((t) => t.id === over.id)?.status;
-
-    if (!task || !newStatus || task.status === newStatus) return;
-
-    // Optimistic update — update UI immediately, before the server confirms
-    setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
-    );
-
-    try {
-      await updateTask(projectId, taskId, { status: newStatus });
-    } catch (err) {
-      setError("Could not move task");
-      loadTasks(); // revert to real server state if it failed
-    }
-  }
-
   async function handlePriorityChange(taskId, newPriority) {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, priority: newPriority } : t))
-    );
+    setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, priority: newPriority } : t)));
     try {
       await updateTask(projectId, taskId, { priority: newPriority });
     } catch (err) {
@@ -101,44 +69,76 @@ function ProjectDetail() {
     }
   }
 
-  if (loading) return <p>Loading...</p>;
+  async function handleDragEnd(event) {
+    const { active, over } = event;
+    if (!over) return;
+    const taskId = active.id;
+    const task = tasks.find((t) => t.id === taskId);
+    const targetColumn = COLUMNS.find((c) => c.id === over.id);
+    const newStatus = targetColumn ? targetColumn.id : tasks.find((t) => t.id === over.id)?.status;
+    if (!task || !newStatus || task.status === newStatus) return;
+
+    setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)));
+    try {
+      await updateTask(projectId, taskId, { status: newStatus });
+    } catch (err) {
+      setError("Could not move task");
+      loadTasks();
+    }
+  }
+
+  if (loading) return <p className="p-8 text-slate-500">Loading...</p>;
 
   return (
-    <div>
-      <Link to="/dashboard">&larr; Back to Workspaces</Link>
-      <h2>Board</h2>
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-5xl mx-auto p-8">
+        <Link to="/dashboard" className="text-sm text-blue-600 hover:underline">
+          &larr; Back to Workspaces
+        </Link>
+        <h2 className="text-lg font-semibold text-slate-700 mt-4 mb-4">Board</h2>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-      <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
-        <div style={{ display: "flex", gap: "16px", marginTop: "16px" }}>
-          {COLUMNS.map((col) => (
-            <BoardColumn
-              key={col.id}
-              id={col.id}
-              title={col.title}
-              tasks={tasks.filter((t) => t.status === col.id)}
-              onDelete={handleDelete}
-              onPriorityChange={handlePriorityChange}
-            />
-          ))}
-        </div>
-      </DndContext>
+        <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
+          <div className="flex gap-4">
+            {COLUMNS.map((col) => (
+              <BoardColumn
+                key={col.id}
+                id={col.id}
+                title={col.title}
+                tasks={tasks.filter((t) => t.status === col.id)}
+                onDelete={handleDelete}
+                onPriorityChange={handlePriorityChange}
+              />
+            ))}
+          </div>
+        </DndContext>
 
-      <form onSubmit={handleCreate} style={{ marginTop: "24px" }}>
-        <input
-          type="text"
-          placeholder="Task title"
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-        />
-        <select value={newPriority} onChange={(e) => setNewPriority(e.target.value)}>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-        <button type="submit">Create Task</button>
-      </form>
+        <form onSubmit={handleCreate} className="flex gap-2 mt-8">
+          <input
+            type="text"
+            placeholder="Task title"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <select
+            value={newPriority}
+            onChange={(e) => setNewPriority(e.target.value)}
+            className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+          >
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition"
+          >
+            Create Task
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
