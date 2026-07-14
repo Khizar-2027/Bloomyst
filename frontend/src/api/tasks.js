@@ -5,10 +5,11 @@ export async function getTasks(projectId) {
   return response.data;
 }
 
-export async function createTask(projectId, title, priority) {
+export async function createTask(projectId, title, priority, status = "todo") {
   const response = await api.post(`/projects/${projectId}/tasks/`, {
     title,
     priority,
+    status,
   });
   return response.data;
 }

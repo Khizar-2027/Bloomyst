@@ -20,36 +20,17 @@ function TaskCard({ task, onDelete, onPriorityChange }) {
   return (
     <div
       ref={setNodeRef}
-      style={{
-        ...style,
-        background: "white",
-        border: "1px solid #e2e8f0",
-        borderRadius: "8px",
-        padding: "12px",
-        marginBottom: "8px",
-        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-      }}
+      {...attributes}
+      {...listeners}
+      style={{ ...style, touchAction: "none" }}
+      className="bg-white border border-slate-200 rounded-lg p-3 mb-2 shadow-sm cursor-grab active:cursor-grabbing"
     >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start" }}>
-        {/* Only this ⠿ handle is draggable — the rest of the card behaves normally */}
-        <span
-          {...attributes}
-          {...listeners}
-          style={{ cursor: "grab", padding: "0 6px 0 0", color: "#cbd5e1" }}
-          title="Drag to move"
-        >
-          ⠿
-        </span>
-        <strong style={{ fontSize: "14px", flex: 1 }}>{task.title}</strong>
+      <div className="flex justify-between items-start">
+        <strong className="text-sm text-slate-800">{task.title}</strong>
         <button
+          onPointerDown={(e) => e.stopPropagation()}
           onClick={() => onDelete(task.id)}
-          style={{
-            border: "none",
-            background: "transparent",
-            cursor: "pointer",
-            color: "#94a3b8",
-            fontSize: "12px",
-          }}
+          className="text-slate-400 hover:text-red-500 text-xs"
         >
           ✕
         </button>
@@ -57,15 +38,10 @@ function TaskCard({ task, onDelete, onPriorityChange }) {
 
       <select
         value={task.priority}
+        onPointerDown={(e) => e.stopPropagation()}
         onChange={(e) => onPriorityChange(task.id, e.target.value)}
-        style={{
-          marginTop: "6px",
-          fontSize: "11px",
-          padding: "2px 6px",
-          borderRadius: "4px",
-          border: "1px solid #e2e8f0",
-          color: PRIORITY_COLORS[task.priority],
-        }}
+        className="mt-2 text-xs px-2 py-0.5 rounded border border-slate-200"
+        style={{ color: PRIORITY_COLORS[task.priority] }}
       >
         <option value="low">Low</option>
         <option value="medium">Medium</option>

@@ -13,8 +13,6 @@ const COLUMNS = [
 function ProjectDetail() {
   const { projectId } = useParams();
   const [tasks, setTasks] = useState([]);
-  const [newTitle, setNewTitle] = useState("");
-  const [newPriority, setNewPriority] = useState("medium");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -37,13 +35,9 @@ function ProjectDetail() {
     }
   }
 
-  async function handleCreate(e) {
-    e.preventDefault();
-    if (!newTitle.trim()) return;
+  async function handleCreateTask(title, status) {
     try {
-      await createTask(projectId, newTitle, newPriority);
-      setNewTitle("");
-      setNewPriority("medium");
+      await createTask(projectId, title, "medium", status);
       loadTasks();
     } catch (err) {
       setError("Could not create task");
@@ -102,42 +96,18 @@ function ProjectDetail() {
         <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
           <div className="flex gap-4">
             {COLUMNS.map((col) => (
-              <BoardColumn
-                key={col.id}
-                id={col.id}
-                title={col.title}
-                tasks={tasks.filter((t) => t.status === col.id)}
-                onDelete={handleDelete}
-                onPriorityChange={handlePriorityChange}
-              />
+            <BoardColumn
+              key={col.id}
+              id={col.id}
+              title={col.title}
+              tasks={tasks.filter((t) => t.status === col.id)}
+              onDelete={handleDelete}
+              onPriorityChange={handlePriorityChange}
+              onCreate={handleCreateTask}
+            />
             ))}
           </div>
         </DndContext>
-
-        <form onSubmit={handleCreate} className="flex gap-2 mt-8">
-          <input
-            type="text"
-            placeholder="Task title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <select
-            value={newPriority}
-            onChange={(e) => setNewPriority(e.target.value)}
-            className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-          <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition"
-          >
-            Create Task
-          </button>
-        </form>
       </div>
     </div>
   );
