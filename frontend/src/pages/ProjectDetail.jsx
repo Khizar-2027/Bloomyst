@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { DndContext, closestCorners, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { getTasks, createTask, updateTask, deleteTask } from "../api/tasks";
+import BoardColumn from "../components/BoardColumn";
 
-const STATUS_LABELS = {
-  todo: "To Do",
-  in_progress: "In Progress",
-  done: "Done",
-};
+const COLUMNS = [
+  { id: "todo", title: "To Do" },
+  { id: "in_progress", title: "In Progress" },
+  { id: "done", title: "Done" },
+];
 
 function ProjectDetail() {
   const { projectId } = useParams();
@@ -15,6 +17,14 @@ function ProjectDetail() {
   const [newPriority, setNewPriority] = useState("medium");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const sensors = useSensors(
+  useSensor(PointerSensor, {
+    activationConstraint: {
+      distance: 8,
+      },
+    })
+  );
 
   useEffect(() => {
     loadTasks();
@@ -44,15 +54,6 @@ function ProjectDetail() {
     }
   }
 
-  async function handleStatusChange(taskId, newStatus) {
-    try {
-      await updateTask(projectId, taskId, { status: newStatus });
-      loadTasks();
-    } catch (err) {
-      setError("Could not update task");
-    }
-  }
-
   async function handleDelete(taskId) {
     try {
       await deleteTask(projectId, taskId);
@@ -62,35 +63,69 @@ function ProjectDetail() {
     }
   }
 
+  async function handleDragEnd(event) {
+    const { active, over } = event;
+    if (!over) return;
+
+    const taskId = active.id;
+    const task = tasks.find((t) => t.id === taskId);
+
+    // over.id is either a column id (todo/in_progress/done) or another task's id
+    const targetColumn = COLUMNS.find((c) => c.id === over.id);
+    const newStatus = targetColumn ? targetColumn.id : tasks.find((t) => t.id === over.id)?.status;
+
+    if (!task || !newStatus || task.status === newStatus) return;
+
+    // Optimistic update — update UI immediately, before the server confirms
+    setTasks((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
+    );
+
+    try {
+      await updateTask(projectId, taskId, { status: newStatus });
+    } catch (err) {
+      setError("Could not move task");
+      loadTasks(); // revert to real server state if it failed
+    }
+  }
+
+  async function handlePriorityChange(taskId, newPriority) {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, priority: newPriority } : t))
+    );
+    try {
+      await updateTask(projectId, taskId, { priority: newPriority });
+    } catch (err) {
+      setError("Could not update priority");
+      loadTasks();
+    }
+  }
+
   if (loading) return <p>Loading...</p>;
 
   return (
     <div>
       <Link to="/dashboard">&larr; Back to Workspaces</Link>
-      <h2>Tasks</h2>
+      <h2>Board</h2>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <ul>
-        {tasks.map((task) => (
-          <li key={task.id} style={{ marginBottom: "8px" }}>
-            <strong>{task.title}</strong> — {task.priority}{" "}
-            <select
-              value={task.status}
-              onChange={(e) => handleStatusChange(task.id, e.target.value)}
-            >
-              <option value="todo">{STATUS_LABELS.todo}</option>
-              <option value="in_progress">{STATUS_LABELS.in_progress}</option>
-              <option value="done">{STATUS_LABELS.done}</option>
-            </select>{" "}
-            <button onClick={() => handleDelete(task.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
+        <div style={{ display: "flex", gap: "16px", marginTop: "16px" }}>
+          {COLUMNS.map((col) => (
+            <BoardColumn
+              key={col.id}
+              id={col.id}
+              title={col.title}
+              tasks={tasks.filter((t) => t.status === col.id)}
+              onDelete={handleDelete}
+              onPriorityChange={handlePriorityChange}
+            />
+          ))}
+        </div>
+      </DndContext>
 
-      {tasks.length === 0 && <p>No tasks yet.</p>}
-
-      <form onSubmit={handleCreate}>
+      <form onSubmit={handleCreate} style={{ marginTop: "24px" }}>
         <input
           type="text"
           placeholder="Task title"
