@@ -14,6 +14,7 @@ class UserOut(BaseModel):
     id: int
     email: EmailStr
     full_name: str | None
+    avatar_url: str | None
     created_at: datetime
 
     class Config:

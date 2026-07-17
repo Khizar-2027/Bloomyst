@@ -1,7 +1,7 @@
 import api from "./client";
 
 export async function getTasks(projectId) {
-  const response = await api.get(`/projects/${projectId}/tasks/`);
+  const response = await api.get(`/projects/${projectId}/tasks/?limit=100`);
   return response.data;
 }
 

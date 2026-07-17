@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { DndContext, closestCorners, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { getTasks, createTask, updateTask, deleteTask } from "../api/tasks";
+import TaskModal from "../components/TaskModal";
 import BoardColumn from "../components/BoardColumn";
 
 const COLUMNS = [
@@ -13,6 +14,7 @@ const COLUMNS = [
 function ProjectDetail() {
   const { projectId } = useParams();
   const [tasks, setTasks] = useState([]);
+  const [openTask, setOpenTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -104,11 +106,19 @@ function ProjectDetail() {
               onDelete={handleDelete}
               onPriorityChange={handlePriorityChange}
               onCreate={handleCreateTask}
+              onOpen={setOpenTask}
             />
             ))}
           </div>
         </DndContext>
       </div>
+        {openTask && (
+          <TaskModal
+            task={openTask}
+            onClose={() => setOpenTask(null)}
+            onDelete={handleDelete}
+          />
+        )}
     </div>
   );
 }

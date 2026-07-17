@@ -31,3 +31,14 @@ class TaskOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class AttachmentOut(BaseModel):
+    id: int
+    task_id: int
+    filename: str
+    file_url: str
+    uploaded_by: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

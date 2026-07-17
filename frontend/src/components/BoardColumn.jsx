@@ -3,7 +3,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import TaskCard from "./TaskCard";
 
-function BoardColumn({ id, title, tasks, onDelete, onPriorityChange, onCreate }) {
+function BoardColumn({ id, title, tasks, onDelete, onPriorityChange, onCreate, onOpen }) {
   const { setNodeRef } = useDroppable({ id });
   const [adding, setAdding] = useState(false);
   const [title_, setTitleValue] = useState("");
@@ -47,14 +47,15 @@ function BoardColumn({ id, title, tasks, onDelete, onPriorityChange, onCreate })
 
       <div ref={setNodeRef} className="flex-1">
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-          {tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onDelete={onDelete}
-              onPriorityChange={onPriorityChange}
-            />
-          ))}
+        {tasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            onDelete={onDelete}
+            onPriorityChange={onPriorityChange}
+            onOpen={onOpen}
+          />
+        ))}
         </SortableContext>
       </div>
     </div>

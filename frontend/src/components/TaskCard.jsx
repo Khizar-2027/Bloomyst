@@ -7,7 +7,7 @@ const PRIORITY_COLORS = {
   high: "#ef4444",
 };
 
-function TaskCard({ task, onDelete, onPriorityChange }) {
+function TaskCard({ task, onDelete, onPriorityChange, onOpen }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: task.id });
 
@@ -24,12 +24,16 @@ function TaskCard({ task, onDelete, onPriorityChange }) {
       {...listeners}
       style={{ ...style, touchAction: "none" }}
       className="bg-white border border-slate-200 rounded-lg p-3 mb-2 shadow-sm cursor-grab active:cursor-grabbing"
+      onClick={() => onOpen(task)}
     >
       <div className="flex justify-between items-start">
         <strong className="text-sm text-slate-800">{task.title}</strong>
         <button
           onPointerDown={(e) => e.stopPropagation()}
-          onClick={() => onDelete(task.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(task.id);
+          }}
           className="text-slate-400 hover:text-red-500 text-xs"
         >
           ✕
@@ -39,6 +43,7 @@ function TaskCard({ task, onDelete, onPriorityChange }) {
       <select
         value={task.priority}
         onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         onChange={(e) => onPriorityChange(task.id, e.target.value)}
         className="mt-2 text-xs px-2 py-0.5 rounded border border-slate-200"
         style={{ color: PRIORITY_COLORS[task.priority] }}

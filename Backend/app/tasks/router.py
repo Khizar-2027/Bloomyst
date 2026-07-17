@@ -58,11 +58,20 @@ def create_task(
 @router.get("/", response_model=list[TaskOut])
 def list_tasks(
     project_id: int,
+    skip: int = 0,
+    limit: int = 20,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     get_project_and_check_membership(project_id, db, current_user)
-    return db.query(Task).filter(Task.project_id == project_id).all()
+    return (
+        db.query(Task)
+        .filter(Task.project_id == project_id)
+        .order_by(Task.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 @router.get("/{task_id}", response_model=TaskOut)
