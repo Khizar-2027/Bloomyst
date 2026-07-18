@@ -12,3 +12,18 @@ class WorkspaceOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class InviteCreate(BaseModel):
+    email: str
+    role: str = "member"
+
+class InviteOut(BaseModel):
+    id: int
+    workspace_id: int
+    email: str
+    role: str
+    accepted: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
