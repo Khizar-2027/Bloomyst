@@ -3,6 +3,7 @@ Backend/__pycache__/
 Backend/*.pyc
 Backend/.env
 Backend/bloomyst.db
+Backend/test.db
 Backend/uploads/
 
 frontend/node_modules/

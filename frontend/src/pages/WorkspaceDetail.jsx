@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getProjects, createProject } from "../api/projects";
+import { createInvite } from "../api/invites";
 
 function WorkspaceDetail() {
   const { workspaceId } = useParams();
   const [projects, setProjects] = useState([]);
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("member");
+  const [inviteMessage, setInviteMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -35,6 +39,18 @@ function WorkspaceDetail() {
       loadProjects();
     } catch (err) {
       setError("Could not create project");
+    }
+  }
+
+  async function handleInvite(e) {
+    e.preventDefault();
+    if (!inviteEmail.trim()) return;
+    try {
+      await createInvite(workspaceId, inviteEmail, inviteRole);
+      setInviteMessage(`Invite sent to ${inviteEmail}`);
+      setInviteEmail("");
+    } catch (err) {
+      setInviteMessage(err.response?.data?.detail || "Could not send invite");
     }
   }
 
@@ -68,6 +84,40 @@ function WorkspaceDetail() {
           )}
         </div>
 
+        {/* --------------------------------------------------- */}
+
+        <div className="border-t border-slate-200 pt-6 mt-6">
+          <h3 className="text-sm font-medium text-slate-700 mb-3">Invite a member</h3>
+          {inviteMessage && <p className="text-sm text-slate-500 mb-2">{inviteMessage}</p>}
+          <form onSubmit={handleInvite} className="flex gap-2">
+            <input
+              type="email"
+              placeholder="Email address"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <select
+              value={inviteRole}
+              onChange={(e) => setInviteRole(e.target.value)}
+              className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+            >
+              <option value="member">Member</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition"
+            >
+              Invite
+            </button>
+          </form>
+        </div>
+
+        {/* --------------------------------------------------- */}
+        <div className="border-t border-slate-200 pt-6 mt-6">
+        <h3 className="text-sm font-medium text-slate-700 mb-3">Create new Project</h3>
+
         <form onSubmit={handleCreate} className="flex gap-2">
           <input
             type="text"
@@ -75,7 +125,7 @@ function WorkspaceDetail() {
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+            />
           <input
             type="text"
             placeholder="Description (optional)"
@@ -90,6 +140,7 @@ function WorkspaceDetail() {
             Create
           </button>
         </form>
+        </div>
       </div>
     </div>
   );

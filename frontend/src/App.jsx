@@ -4,6 +4,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import WorkspaceDetail from './pages/WorkspaceDetail'
 import ProjectDetail from './pages/ProjectDetail'
+import AcceptInvite from './pages/AcceptInvite'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/invites/:token/accept" element={<AcceptInvite />} />
       <Route
         path="/dashboard"
         element={
