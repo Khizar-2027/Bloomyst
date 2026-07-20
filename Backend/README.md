@@ -45,3 +45,10 @@ app/
 ## Known Limitations
 
 - **File storage:** Avatars and task attachments are currently stored on local disk rather than cloud object storage (e.g. AWS S3). This works correctly for local development, but would need to move to a persistent/cloud storage solution before a production deployment with ephemeral disk, to prevent uploaded files from being lost on redeploy.
+
+## Live Demo
+
+- **App:** https://bloomyst-xyz.vercel.app
+- **API Docs:** https://bloomyst-api.onrender.com/docs
+
+> Note: the backend is on a free tier and may take 30-60 seconds to wake up on first load after inactivity.
