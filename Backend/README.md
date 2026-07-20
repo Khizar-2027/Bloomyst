@@ -41,3 +41,7 @@ app/
   users/        # User model, schemas
   workspaces/   # Workspace, WorkspaceMember, role-based dependencies
 \`\`\`
+
+## Known Limitations
+
+- **File storage:** Avatars and task attachments are currently stored on local disk rather than cloud object storage (e.g. AWS S3). This works correctly for local development, but would need to move to a persistent/cloud storage solution before a production deployment with ephemeral disk, to prevent uploaded files from being lost on redeploy.
