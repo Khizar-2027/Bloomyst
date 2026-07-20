@@ -93,7 +93,7 @@ function TaskModal({ task, onClose, onDelete }) {
                   className="flex justify-between items-center bg-slate-50 rounded px-3 py-2 text-sm"
                 >
                   
-                    <a href={`http://localhost:8000${a.file_url}`}
+                    <a href={`${import.meta.env.VITE_API_URL}${user.avatar_url}`}
                     target="_blank"
                     rel="noreferrer"
                     className="text-blue-600 hover:underline truncate"

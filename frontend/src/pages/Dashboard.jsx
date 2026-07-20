@@ -81,7 +81,7 @@ function Dashboard() {
             >
               {user?.avatar_url ? (
                 <img
-                  src={`http://localhost:8000${user.avatar_url}`}
+                  src={`${import.meta.env.VITE_API_URL}${user.avatar_url}`}
                   alt="avatar"
                   className="w-full h-full object-cover"
                 />
