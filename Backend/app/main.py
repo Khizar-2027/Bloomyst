@@ -28,7 +28,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import os
+
+os.makedirs("uploads/avatars", exist_ok=True)
+os.makedirs("uploads/attachments", exist_ok=True)
+
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 
 app.include_router(auth_router)
 app.include_router(user_router)
