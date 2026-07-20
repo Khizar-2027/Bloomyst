@@ -48,7 +48,7 @@ app/
 
 ## Live Demo
 
-- **App:** https://bloomyst-xyz.vercel.app
+- **App:** https://bloomyst.vercel.app
 - **API Docs:** https://bloomyst-api.onrender.com/docs
 
 > Note: the backend is on a free tier and may take 30-60 seconds to wake up on first load after inactivity.
